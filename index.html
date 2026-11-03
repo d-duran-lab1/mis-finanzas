@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Finanzas"><meta name="theme-color" content="#0b0f17">
+<title>Mis Finanzas</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--line:#dfe4ec;--tx:#111827;--mu:#5b6472;--g:#10b981;--p:#8b5cf6;--c:#0e7490;--k:#be185d;--r:#e11d48;--on:#fff;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0f17;--card:#151c28;--line:#232d3f;--tx:#f3f4f6;--mu:#9ca3af;--c:#06b6d4;--k:#ec4899;--r:#f43f5e;--on:#04251a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 12px calc(60px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+main{max-width:1080px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:16px 0 12px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}.bi{background:linear-gradient(135deg,var(--c),var(--k));width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+h1{margin:0;font-size:20px;letter-spacing:-.02em}h2{margin:0 0 4px;font-size:16px}
+.sub,.mu{color:var(--mu);font-size:13px;margin:0}
+nav{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:14px;overflow-x:auto}
+nav button{flex:1;white-space:nowrap;background:none;border:0;border-radius:10px;color:var(--mu);font-weight:600;padding:10px 12px;width:auto}
+nav button.on{background:var(--g);color:var(--on)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.grid{display:grid;gap:12px;margin-bottom:12px}.k4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.k2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.two{display:grid;grid-template-columns:minmax(280px,5fr) 7fr;gap:12px;margin-bottom:12px}@media(max-width:760px){.two{grid-template-columns:1fr}}
+.big{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:2px 0}
+.bar{height:9px;background:var(--bg);border:1px solid var(--line);border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;width:0;transition:width .4s}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+input,select,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+button{cursor:pointer;width:auto}
+.pri{background:var(--g);color:var(--on);font-weight:700;border:0;width:100%;margin-top:14px;padding:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.chips button{padding:6px 12px;border-radius:20px;font-size:13px}
+.chart{position:relative;height:280px}.fill{display:flex;flex-direction:column}.fill .chart{flex:1 1 0;height:auto;min-height:280px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th{color:var(--mu);font-weight:500;text-align:left;padding:8px;border-bottom:1px solid var(--line)}td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.r{text-align:right}.in{color:var(--g)}.neg{color:var(--r)}
+.x{background:none;border:0;color:var(--mu);padding:4px 8px}.x:hover{color:var(--r)}
+.hidden{display:none!important}
+.ln{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+</style></head><body><main>
+<header>
+ <div class="brand"><div class="bi" aria-hidden="true">💰</div><div><h1>Mis finanzas</h1><p class="sub">Diego</p></div></div>
+ <div><label for="ym" style="margin:0 0 4px">Mes</label><input type="month" id="ym"></div>
+</header>
+<nav id="nav"></nav>
+
+<section id="tab-res">
+ <div class="grid k4" id="kpis"></div>
+ <div class="grid k2">
+  <div class="card"><h2>Revolut 15%: compras del mes</h2><p class="sub" id="rv-t"></p><div class="bar"><i id="rv-b" style="background:var(--p)"></i></div><p class="mu" id="rv-f"></p></div>
+  <div class="card"><h2>Nu Cajita Turbo 13%: compra del mes</h2><p class="sub" id="nu-t"></p><div class="bar"><i id="nu-b" style="background:var(--k)"></i></div><p class="mu" id="nu-f"></p></div>
+  <div class="card"><h2>Presupuesto de gastos, comida y salidas</h2><p class="sub" id="bu-t"></p><div class="bar"><i id="bu-b" style="background:var(--c)"></i></div><p class="mu" id="bu-f"></p></div>
+ </div>
+ <div class="two"><div class="card fill"><h2>En qué se va tu ingreso este mes</h2><p class="sub" id="dn-s"></p><div class="chart"><canvas id="dn"></canvas></div></div>
+ <div class="card"><h2>Últimos movimientos</h2><div id="rec"></div></div></div>
+</section>
+
+<section id="tab-gas" class="hidden">
+ <div class="two"><form class="card" id="fg"><h2>Registrar gasto</h2>
+  <p class="mu">Toca uno para llenar el concepto rápido:</p><div class="chips" id="chips"></div>
+  <label for="gc">Concepto</label><input id="gc" required placeholder="Ej. Oxxo, cine, gasolina, pago TdC">
+  <div class="row2"><div><label for="ga">Monto (MXN)</label><input id="ga" type="number" step="0.01" min="0.01" required inputmode="decimal"></div><div><label for="gd">Fecha</label><input id="gd" type="date" required></div></div>
+  <label for="gk">Categoría</label><select id="gk"></select>
+  <p class="mu" style="margin:6px 0 0">Ahorro e inversión suma al apartado PPR (Banamex), Enganche y Viajes a tus cajitas Nu, y Ahorro Revolut a Revolut.</p>
+  <label for="gm">Método de pago (de aquí sale el dinero)</label><select id="gm"></select><button class="pri">Guardar gasto</button></form>
+  <div class="card"><h2>Gastos por categoría</h2><p class="sub" id="cg-s"></p><div id="cg"></div></div></div>
+ <div class="card"><h2>Gastos del mes</h2><div id="tg"></div></div>
+</section>
+
+<section id="tab-ing" class="hidden">
+ <div class="two"><form class="card" id="fi"><h2>Registrar ingreso</h2>
+  <label for="ic">Concepto</label><input id="ic" required placeholder="Ej. Nómina, pago extra">
+  <div class="row2"><div><label for="ia">Monto (MXN)</label><input id="ia" type="number" step="0.01" min="0.01" required inputmode="decimal"></div><div><label for="idt">Fecha</label><input id="idt" type="date" required></div></div>
+  <label for="ik">Tipo de ingreso</label><select id="ik"></select>
+  <label for="ib">Depositar en</label><select id="ib"></select>
+  <p class="mu" style="margin:6px 0 0">Registra aquí nómina, rendimientos o lo que te transfiera tu mamá.</p><button class="pri">Guardar ingreso</button></form>
+  <div class="card"><h2 id="it">Ingresos del mes</h2><p class="sub" id="is"></p><div id="ti"></div></div></div>
+</section>
+
+<section id="tab-tar" class="hidden">
+ <div class="grid k4" id="tk"></div>
+ <div class="two"><form class="card" id="fm"><h2>Agregar compra a meses sin intereses</h2>
+  <label for="mn">Compra</label><input id="mn" required placeholder="Ej. Celular, boletos">
+  <div class="row2"><div><label for="mm">Mensualidad</label><input id="mm" type="number" step="0.01" min="0.01" required></div><div><label for="mt">Meses totales</label><input id="mt" type="number" min="1" required></div></div>
+  <label for="mp">Mensualidades ya pagadas</label><input id="mp" type="number" min="0" value="0">
+  <button class="pri">Agregar</button></form>
+  <div class="card"><h2>Mis meses sin intereses</h2><p class="sub">Toca "+1 pagada" cuando se cobre cada mensualidad.</p><div id="msi"></div></div></div>
+ <div class="card"><h2>Cargos y pagos de la tarjeta Banamex TdC este mes</h2><div id="tt"></div></div>
+</section>
+
+<section id="tab-cue" class="hidden">
+ <div class="two"><div class="card"><h2>Dónde está tu dinero hoy</h2><p class="sub" id="bal-s"></p><div id="bal" style="margin-top:8px"></div>
+  <details style="margin-top:14px"><summary class="mu" style="cursor:pointer">Ajustar saldos y cuentas</summary>
+   <div class="row2" id="ofl"></div>
+   <p class="mu" style="margin-top:8px">Al guardar, estos saldos pasan a ser el punto de partida y solo se suman los movimientos que registres desde ese momento.</p><button type="button" class="pri" id="osave">Guardar saldos</button></details></div>
+  <div class="card fill"><h2>Cómo se reparte tu patrimonio</h2><div class="chart"><canvas id="pt"></canvas></div></div></div>
+ <div class="card"><h2>Meta: enganche de propiedad</h2><p class="sub" id="goal-t"></p><div class="bar"><i id="goal-b" style="background:var(--g)"></i></div><p class="mu" id="goal-f"></p></div>
+</section>
+
+<section id="tab-gra" class="hidden"><div class="grid k2">
+ <div class="card"><h2>Gastos por categoría (mes)</h2><div class="chart"><canvas id="c1"></canvas></div></div>
+ <div class="card"><h2>Ingresos y gastos, últimos 6 meses</h2><div class="chart"><canvas id="c2"></canvas></div></div>
+ <div class="card"><h2>Gasto por día del mes</h2><div class="chart"><canvas id="c3"></canvas></div></div>
+ <div class="card"><h2>Ahorro por mes, últimos 6 meses</h2><div class="chart"><canvas id="c4"></canvas></div></div></div>
+</section>
+
+<section id="tab-his" class="hidden"><div class="card">
+ <h2>Historial de movimientos</h2>
+ <div class="row2"><div><label for="hq">Buscar</label><input id="hq" placeholder="Concepto, categoría o método"></div><div><label for="hs">Mostrar</label><select id="hs"><option value="m">Solo el mes elegido</option><option value="a">Todo el historial</option></select></div></div>
+ <div id="th" style="margin-top:8px"></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button id="ex">Descargar respaldo</button><label style="margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--tx)">Restaurar respaldo<input type="file" id="im" accept=".json" hidden></label></div>
+ <p class="mu" style="margin-top:8px">Tus datos se guardan solo en este dispositivo. Descarga un respaldo de vez en cuando.</p>
+</div></section>
+</main>
+<script>
+const KEY='finanzas_v2',CT='Compras del día (Oxxo, café, antojos)',CE='Entretenimiento (cine, salidas)',
+CATS=['Gastos fijos','Meses sin intereses','Pago de TdC','Ahorro e inversión','Enganche (Nu)','Ahorro Revolut','Ahorro Viajes (Nu)',CT,CE,'Gastos variables'],
+SAV=['Ahorro e inversión','Enganche (Nu)','Ahorro Revolut','Ahorro Viajes (Nu)'],
+DEST={'Ahorro e inversión':'ahorro_bmx','Enganche (Nu)':'nu','Ahorro Revolut':'rev','Ahorro Viajes (Nu)':'nu_viajes'},
+SPEND=[CT,CE,'Gastos variables'],
+ACC=[['main','Banamex débito (principal)'],['ahorro_bmx','Banamex ahorro (apartado PPR)'],['rev_gastos','Revolut (gastos)'],['rev','Revolut (ahorro 15%)'],['nu_deb','Nu débito (gastos)'],['nu','Nu cajita (enganche)'],['nu_viajes','Nu cajita (viajes)'],['ppr','PPR Allianz']],
+LIAB=['tdc','Deuda TdC Banamex'],
+METACC={'Revolut Débito':'rev_gastos','Nu Débito/Crédito':'nu_deb','Banamex TdC':'tdc','Banamex Débito (principal)':'main','Nómina / Transferencia':'main'},
+INC=['Nómina','Extra / freelance','Rendimientos (intereses)','Reembolso / regalo','Otro ingreso'],
+METHODS=['Revolut Débito','Nu Débito/Crédito','Banamex TdC','Banamex Débito (principal)','Nómina / Transferencia'],
+QUICK=[['Oxxo',CT],['Café',CT],['Comida fuera',CT],['Cine',CE],['Salida con amigos',CE],['Gasolina','Gastos fijos'],['Súper','Gastos fijos'],['Pago TdC','Pago de TdC'],['Transporte / Uber','Gastos variables']],
+TABS=[['res','🏠','Resumen'],['gas','💸','Gastos'],['ing','💰','Ingresos'],['tar','💳','Tarjeta'],['cue','🏦','Cuentas'],['gra','📊','Gráficas'],['his','🕘','Historial']];
+const T=(d,c,a,k,m,t='gasto',dest=null)=>({id:Math.random(),date:d,concept:c,amount:a,cat:k,method:m,type:t,dest});
+/* Saldos = foto de hoy (3 nov 2026), ya incluyen los movimientos del 1 nov. Los movimientos sembrados no tienen ts, así que NO se vuelven a sumar. */
+const N1='2026-11-01',NT='Nómina / Transferencia';
+const SEED={cfg:{revMin:4,revAmt:50,nuMin:1,revRate:15,goal:187500,budget:3500,
+open:{main:4641.02,ahorro_bmx:1480,rev_gastos:1139.80,rev:16979.13,nu_deb:50,nu:2951.86,nu_viajes:0,ppr:17507.42,tdc:3722.67},
+msi:[{id:1,n:'Regalo (MSI)',m:259.56,tot:9,paid:6},{id:2,n:'Regalo 2 (MSI)',m:295.33,tot:9,paid:5},{id:3,n:'Boletos de avión',m:663.41,tot:6,paid:2}]},tx:[
+T(N1,'Nómina quincena 1',12037.65,'Nómina','Nómina / Transferencia','ingreso','main'),
+T(N1,'Nu Cajita Turbo (enganche)',1750,'Enganche (Nu)',NT),
+T(N1,'PPR Allianz (parcial)',1400,'Ahorro e inversión',NT),
+T(N1,'Nu Cajita Viajes',2100.85,'Ahorro Viajes (Nu)',NT),
+T(N1,'Gasolina',870,'Gastos fijos','Revolut Débito'),
+T(N1,'Súper (provisional)',500,'Gastos fijos','Revolut Débito'),
+T(N1,'Teléfono celular',249.50,'Gastos fijos','Nu Débito/Crédito'),
+T(N1,'Spotify',249,'Gastos fijos','Banamex TdC'),
+T(N1,'Stick (Amazon)',200,'Gastos fijos','Banamex TdC'),
+T(N1,'Regalo (MSI)',259.56,'Meses sin intereses','Banamex TdC'),
+T(N1,'Regalo 2 (MSI)',295.33,'Meses sin intereses','Banamex TdC'),
+T(N1,'Boletos de avión (MSI)',663.41,'Meses sin intereses','Banamex TdC')]};
+const $=id=>document.getElementById(id),mx=n=>n.toLocaleString('es-MX',{style:'currency',currency:'MXN'}),sum=a=>a.reduce((s,t)=>s+t.amount,0),
+esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
+css=n=>{try{return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888'}catch(e){return'#888'}},
+opts=l=>l.map(x=>`<option value="${esc(Array.isArray(x)?x[0]:x)}">${esc(Array.isArray(x)?x[1]:x)}</option>`).join('');
+const mergeCfg=c=>({...SEED.cfg,...(c||{}),open:{...SEED.cfg.open,...((c||{}).open||{})}});
+let S=load(),ch={},tab='res';
+if(!S.cfg.sinceTs){S.cfg.sinceTs=Date.now();save()}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.tx))return{cfg:mergeCfg(s.cfg),tx:s.tx}}catch(e){}return structuredClone(SEED)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const loc=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString();
+$('ym').value=loc.slice(0,7);['gd','idt'].forEach(i=>$(i).value=loc.slice(0,10));
+$('gk').innerHTML=opts(CATS);$('gm').innerHTML=opts(METHODS);$('ik').innerHTML=opts(INC);$('ib').innerHTML=opts(ACC);
+$('ofl').innerHTML=[...ACC,LIAB].map(([k,l])=>`<div><label for="o-${k}">${l}</label><input id="o-${k}" type="number" step="0.01"></div>`).join('');
+$('chips').innerHTML=QUICK.map((q,i)=>`<button type="button" data-q="${i}">${q[0]}</button>`).join('');
+$('chips').onclick=e=>{const i=e.target.dataset.q;if(i==null)return;$('gc').value=QUICK[i][0];$('gk').value=QUICK[i][1];$('ga').focus()};
+$('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}">${t[1]} ${t[2]}</button>`).join('');
+$('nav').onclick=e=>{const t=e.target.dataset.t;if(t){tab=t;render()}};
+function add(t){S.tx.push({...t,id:Math.random(),ts:Date.now()});save();$('ym').value=t.date.slice(0,7);render()}
+$('fg').onsubmit=e=>{e.preventDefault();add({date:$('gd').value,concept:$('gc').value.trim(),amount:parseFloat($('ga').value),cat:$('gk').value,method:$('gm').value,type:'gasto'});$('gc').value='';$('ga').value=''};
+$('fi').onsubmit=e=>{e.preventDefault();const d=ACC.find(a=>a[0]==$('ib').value);add({date:$('idt').value,concept:$('ic').value.trim(),amount:parseFloat($('ia').value),cat:$('ik').value,method:d[1],dest:d[0],type:'ingreso'});$('ic').value='';$('ia').value=''};
+$('fm').onsubmit=e=>{e.preventDefault();S.cfg.msi.push({id:Math.random(),n:$('mn').value.trim(),m:parseFloat($('mm').value),tot:parseInt($('mt').value),paid:parseInt($('mp').value)||0});save();$('mn').value='';$('mm').value='';$('mt').value='';$('mp').value='0';render()};
+$('ym').onchange=render;$('hq').oninput=render;$('hs').onchange=render;
+function msi(id,d){const p=S.cfg.msi.find(x=>x.id===id);if(!p)return;if(d==='x')S.cfg.msi=S.cfg.msi.filter(x=>x.id!==id);else p.paid=Math.min(p.tot,p.paid+1);save();render()}
+function del(id){S.tx=S.tx.filter(t=>t.id!==id);save();render()}
+/* Cada movimiento afecta SOLO la cuenta según su método de pago */
+function balances(){const C=S.cfg,b={...C.open},today=loc.slice(0,10);
+ S.tx.filter(t=>t.ts>=C.sinceTs&&t.date<=today).forEach(t=>{
+  if(t.type=='ingreso'){b[t.dest||'main']+=t.amount;return}
+  const a=METACC[t.method]||'main';
+  if(t.cat=='Pago de TdC'){b.tdc-=t.amount;if(a!='tdc')b[a]-=t.amount}
+  else if(a=='tdc')b.tdc+=t.amount;
+  else b[a]-=t.amount;
+  const d=DEST[t.cat];if(d)b[d]+=t.amount});return b}
+function fillOpen(){const o=S.cfg.open;[...ACC,LIAB].forEach(([k])=>$('o-'+k).value=o[k]||0)}
+$('osave').onclick=()=>{const o={};[...ACC,LIAB].forEach(([k])=>o[k]=+$('o-'+k).value||0);S.cfg.open=o;S.cfg.sinceTs=Date.now();save();render();alert('Saldos guardados correctamente.')};
+$('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='respaldo-finanzas-'+loc.slice(0,10)+'.json';a.click()};
+$('im').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(x=>{try{const s=JSON.parse(x);if(!Array.isArray(s.tx))throw 0;S={cfg:mergeCfg(s.cfg),tx:s.tx};S.cfg.sinceTs=S.cfg.sinceTs||Date.now();save();fillOpen();render()}catch(_){alert('El archivo no es un respaldo válido.')}})};
+function mon(ym){const m=S.tx.filter(t=>t.date.startsWith(ym)),g=m.filter(t=>t.type=='gasto');return{m,g,inc:sum(m.filter(t=>t.type=='ingreso')),out:sum(g),sav:sum(g.filter(t=>SAV.includes(t.cat)))}}
+function draw(id,cfg){if(!window.Chart)return;if(ch[id])ch[id].destroy();ch[id]=new Chart($(id),cfg)}
+const tbl=(a,msg)=>a.length?`<div class="tw"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Método</th><th class="r">Monto</th><th></th></tr></thead><tbody>${a.map(t=>`<tr><td>${t.date}</td><td>${esc(t.concept)}</td><td>${esc(t.cat)}</td><td>${esc(t.method)}</td><td class="r ${t.type=='ingreso'?'in':''}">${t.type=='ingreso'?'+':''}${mx(t.amount)}</td><td><button class="x" aria-label="Borrar" onclick="del(${t.id})">✕</button></td></tr>`).join('')}</tbody></table></div>`:`<p class="mu">${msg}</p>`;
+const byDate=a=>[...a].sort((x,y)=>y.date.localeCompare(x.date)),ln=(l,v,c='')=>`<div class="ln"><span>${l}</span><b class="${c}">${v}</b></div>`;
+const dOpt=()=>({responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:innerWidth>700?'right':'bottom',labels:{color:css('--mu'),boxWidth:12}},tooltip:{callbacks:{label:x=>` ${x.label}: ${mx(x.raw)}`}}}});
+const aOpt=()=>({responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:css('--mu')},grid:{display:false}},y:{ticks:{color:css('--mu'),callback:v=>'$'+v/1000+'k'},grid:{color:css('--line')}}},plugins:{legend:{labels:{color:css('--mu')}},tooltip:{callbacks:{label:x=>` ${x.dataset.label}: ${mx(x.raw)}`}}}});
+const PAL=['#8b5cf6','#06b6d4','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#84cc16','#14b8a6','#a855f7'];
+function render(){
+ TABS.forEach(t=>{$('tab-'+t[0]).classList.toggle('hidden',t[0]!=tab)});[...$('nav').children].forEach(b=>b.className=b.dataset.t==tab?'on':'');
+ const b=balances(),ym=$('ym').value,{m,g,inc,out,sav}=mon(ym),C=S.cfg,free=inc-out,pc=n=>inc?(n/inc*100).toFixed(1)+'% del ingreso':'',cat=k=>sum(g.filter(t=>t.cat==k)),Ch=css('--card');
+ Chart.defaults&&(Chart.defaults.color=css('--mu'));
+ /* Resumen */
+ $('kpis').innerHTML=[['Ingreso de este mes',inc,'in',''],['Lo que ahorraste este mes',sav,'',pc(sav)],['Lo que gastaste (sin ahorro)',out-sav,'',pc(out-sav)],['Te queda libre este mes',free,free<0?'neg':'in',pc(free)]]
+  .map(([l,v,c,s])=>`<div class="card"><div class="mu">${l}</div><div class="big ${c}">${mx(v)}</div><div class="mu">${s||'&nbsp;'}</div></div>`).join('');
+ const rv=g.filter(t=>t.method.startsWith('Revolut')&&t.amount>=C.revAmt).length,nu=g.filter(t=>t.method.startsWith('Nu')).length;
+ $('rv-t').textContent=`${Math.min(rv,C.revMin)} de ${C.revMin} compras de ${mx(C.revAmt)} o más con la tarjeta Revolut`;$('rv-b').style.width=Math.min(rv/C.revMin*100,100)+'%';
+ $('rv-f').textContent=`Rendimiento estimado: ${mx(b.rev*C.revRate/1200)} al mes sobre tu ahorro en Revolut`;
+ $('nu-t').textContent=`${Math.min(nu,C.nuMin)} de ${C.nuMin} compra con la tarjeta Nu`;$('nu-b').style.width=Math.min(nu/C.nuMin*100,100)+'%';
+ $('nu-f').textContent=`Cajitas Nu: ${mx(b.nu+b.nu_viajes)} · ve la meta de enganche en Cuentas`;
+ const q=Math.max(1,m.filter(t=>t.type=='ingreso'&&t.cat=='Nómina').length),lim=C.budget*q,sp=sum(g.filter(t=>SPEND.includes(t.cat)));
+ $('bu-t').textContent=`${mx(sp)} de ${mx(lim)} (${q} quincena${q>1?'s':''} de ${mx(C.budget)})`;$('bu-b').style.width=Math.min(sp/lim*100,100)+'%';$('bu-b').style.background=sp>lim?'var(--r)':'var(--c)';
+ $('bu-f').textContent=sp>lim?`Te pasaste por ${mx(sp-lim)}`:`Te quedan ${mx(lim-sp)} para gastos, comida, salidas y regalos`;
+ const fx=cat('Gastos fijos'),ms=cat('Meses sin intereses');$('dn-s').textContent=inc?`Ingreso del mes: ${mx(inc)}`:'Registra un ingreso para ver la distribución';
+ draw('dn',{type:'doughnut',data:{labels:['Ahorro e inversión','Gastos fijos','Meses sin intereses','Compras del día y gustos','Te queda libre'],datasets:[{data:[sav,fx,ms,Math.max(out-sav-fx-ms,0),Math.max(free,0)],backgroundColor:[PAL[0],PAL[1],PAL[2],PAL[3],PAL[4]],borderColor:Ch,borderWidth:3}]},options:dOpt()});
+ $('rec').innerHTML=byDate(m).slice(0,7).map(t=>ln(`${esc(t.concept)}<br><small class="mu">${t.date.slice(5)} · ${esc(t.cat)}</small>`,(t.type=='ingreso'?'+':'−')+mx(t.amount),t.type=='ingreso'?'in':'')).join('')||'<p class="mu">Aún no hay movimientos este mes.</p>';
+ /* Gastos */
+ const tg=sum(g);$('cg-s').textContent=`Total gastado este mes: ${mx(tg)}`;
+ $('cg').innerHTML=CATS.map(k=>[k,cat(k)]).filter(x=>x[1]>0).map(([k,v])=>`<div style="margin:8px 0"><div class="ln" style="border:0;padding:0"><span>${esc(k)}</span><b>${mx(v)} <span class="mu">${(v/tg*100).toFixed(0)}%</span></b></div><div class="bar" style="margin:4px 0"><i style="width:${v/tg*100}%;background:var(--p)"></i></div></div>`).join('')||'<p class="mu">Sin gastos este mes.</p>';
+ $('tg').innerHTML=tbl(byDate(g),'Aún no hay gastos este mes.');
+ /* Ingresos */
+ const im=m.filter(t=>t.type=='ingreso');$('it').textContent='Ingresos del mes';$('is').textContent=`Total: ${mx(inc)}`;$('ti').innerHTML=tbl(byDate(im),'Aún no hay ingresos este mes.');
+ /* Tarjeta */
+ const tdc=g.filter(t=>t.method=='Banamex TdC'||t.cat=='Pago de TdC'),act=C.msi.filter(p=>p.paid<p.tot),pend=sum(act.map(p=>({amount:p.m*(p.tot-p.paid)}))),mens=sum(act.map(p=>({amount:p.m})));
+ $('tk').innerHTML=[['Saldo actual por pagar TdC',b.tdc],['Cargos / pagos TdC este mes',sum(tdc)],['Mensualidades MSI al mes',mens],['Pendiente total en MSI',pend],['Planes MSI activos',null,act.length]].map(([l,v,n])=>`<div class="card"><div class="mu">${l}</div><div class="big">${v==null?n:mx(v)}</div></div>`).join('');
+ $('msi').innerHTML=C.msi.map(p=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="ln" style="border:0;padding:0"><b>${esc(p.n)}</b><span>${mx(p.m)}/mes</span></div><div class="bar"><i style="width:${p.paid/p.tot*100}%;background:var(--k)"></i></div><div class="ln" style="border:0;padding:0"><span class="mu">${p.paid} de ${p.tot} pagadas · restan ${mx(p.m*(p.tot-p.paid))}</span><span>${p.paid<p.tot?`<button onclick="msi(${p.id},1)">+1 pagada</button>`:'<span class="in">Liquidado</span>'} <button class="x" aria-label="Borrar" onclick="msi(${p.id},'x')">✕</button></span></div></div>`).join('')||'<p class="mu">No tienes compras a meses sin intereses registradas.</p>';
+ $('tt').innerHTML=tbl(byDate(tdc),'No hay cargos con la tarjeta Banamex TdC este mes.');
+ /* Cuentas */
+ const N=ACC.map(([k,l])=>[l,b[k],k]),assets=N.reduce((s,x)=>s+x[1],0),net=assets-b.tdc;
+ $('bal').innerHTML=N.map(([l,v,k])=>{const init=C.open[k]||0,d=v-init;return ln(`${l}<br><small class="mu">Saldo inicial ${mx(init)} · movimientos ${d<0?'−':'+'}${mx(Math.abs(d))}</small>`,mx(v))}).join('')
+  +ln(`${LIAB[1]}<br><small class="mu">Tu mamá te transferirá este pago · inicial ${mx(C.open.tdc||0)}</small>`,'−'+mx(b.tdc),'neg')
+  +`<div class="ln" style="font-size:18px;border:0"><b>Patrimonio neto</b><b class="in">${mx(net)}</b></div>`;
+ $('bal-s').textContent=`Parten de los saldos que guardaste el ${new Date(C.sinceTs).toLocaleDateString('es-MX')} y cambian con cada movimiento que registras desde entonces.`;
+ draw('pt',{type:'doughnut',data:{labels:N.map(x=>x[0]),datasets:[{data:N.map(x=>Math.max(x[1],0)),backgroundColor:PAL,borderColor:Ch,borderWidth:3}]},options:dOpt()});
+ $('goal-t').textContent=`${mx(b.nu)} de ${mx(C.goal)} (${(b.nu/C.goal*100).toFixed(1)}%)`;$('goal-b').style.width=Math.min(b.nu/C.goal*100,100)+'%';$('goal-f').textContent=`Te faltan ${mx(Math.max(C.goal-b.nu,0))} para tu enganche.`;
+ /* Gráficas */
+ const [y,mo]=ym.split('-').map(Number),L=[],I=[],O=[],A=[];
+ for(let i=5;i>=0;i--){const d=new Date(y,mo-1-i,1),r=mon(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));L.push(d.toLocaleDateString('es-MX',{month:'short'}));I.push(r.inc);O.push(r.out);A.push(r.sav)}
+ const cs=CATS.map(k=>[k,cat(k)]).filter(x=>x[1]>0),nd=new Date(y,mo,0).getDate(),D=Array(nd).fill(0);g.forEach(t=>D[+t.date.slice(8,10)-1]+=t.amount);
+ draw('c1',{type:'doughnut',data:{labels:cs.map(x=>x[0]),datasets:[{data:cs.map(x=>x[1]),backgroundColor:PAL,borderColor:Ch,borderWidth:3}]},options:dOpt()});
+ draw('c2',{type:'bar',data:{labels:L,datasets:[{label:'Ingresos',data:I,backgroundColor:PAL[4]},{label:'Gastos + ahorro',data:O,backgroundColor:PAL[0]}]},options:aOpt()});
+ draw('c3',{type:'bar',data:{labels:D.map((_,i)=>i+1),datasets:[{label:'Gasto del día',data:D,backgroundColor:PAL[2]}]},options:aOpt()});
+ draw('c4',{type:'bar',data:{labels:L,datasets:[{label:'Ahorro e inversión',data:A,backgroundColor:PAL[1]}]},options:aOpt()});
+ /* Historial */
+ const qy=$('hq').value.toLowerCase(),H=byDate(($('hs').value=='a'?S.tx:m).filter(t=>(t.concept+t.cat+t.method).toLowerCase().includes(qy)));
+ $('th').innerHTML=tbl(H,'No hay movimientos con ese filtro.');
+}
+fillOpen();render();
+</script></body></html>
